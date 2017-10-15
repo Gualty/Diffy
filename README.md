@@ -1,9 +1,15 @@
-# BOTDifferenziata
+# BOT Differenziata
 Bot Telegram per la gestione della raccolta differenziata nei comuni.
 
 Funzioni
 ---------
 Calendario raccolta, spiegazioni sui singoli materiali riciclabili e non ed informazioni utili fornite dal comune.
+
+BOT già attivi
+---------
+[@DiffSGLaPuntabot](https://telegram.me/DiffSGLaPuntabot) - Raccolta differenziata San Giovanni la Punta (CT)
+
+[@DiffGravinaCTbot](https://telegram.me/DiffGravinaCTbot) - Raccolta differenziata Gravina di Catania (CT)
 
 Crediti
 ---------
