@@ -31,6 +31,8 @@ Requisiti
 
 Per iniziare
 ---------
+⚠️ La presente sezione non è ancora completa ⚠️
+
 1) Dai un'occhiata alla documentazione ufficiale sul sito [Telegram.org](https://core.telegram.org/bots)
 2) Segui le istruzioni su come attivare un bot con [BotFather](https://core.telegram.org/bots#6-botfather) e generare un TOKEN
 3) Scarica l'[ultima release](https://github.com/Gualty/BOTDifferenziata/releases/latest) di BOTDifferenziata
