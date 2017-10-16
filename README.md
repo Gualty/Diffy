@@ -23,6 +23,8 @@ BOT già attivi
 
 [@DiffGravinaCTbot](https://telegram.me/DiffGravinaCTbot) - Raccolta differenziata Gravina di Catania (CT)
 
+[@DiffAdranobot](https://telegram.me/DiffGravinaCTbot) - Raccolta differenziata Adrano (CT)
+
 Requisiti
 ---------
 * PHP >= 5.3
