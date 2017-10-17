@@ -19,11 +19,14 @@ Materiali supportati
 
 BOT già attivi
 ---------
-[@DiffSGLaPuntabot](https://telegram.me/DiffSGLaPuntabot) - Raccolta differenziata San Giovanni la Punta (CT)
+[@DiffAciCatenabot](https://telegram.me/DiffAciCatenabot) - Raccolta differenziata Aci Catena(CT)
+
+[@DiffAdranobot](https://telegram.me/DiffAdranobot) - Raccolta differenziata Adrano (CT)
 
 [@DiffGravinaCTbot](https://telegram.me/DiffGravinaCTbot) - Raccolta differenziata Gravina di Catania (CT)
 
-[@DiffAdranobot](https://telegram.me/DiffAdranobot) - Raccolta differenziata Adrano (CT)
+[@DiffSGLaPuntabot](https://telegram.me/DiffSGLaPuntabot) - Raccolta differenziata San Giovanni la Punta (CT)
+
 
 Requisiti
 ---------
