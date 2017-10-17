@@ -27,6 +27,8 @@ BOT già attivi
 
 [@DiffSGLaPuntabot](https://telegram.me/DiffSGLaPuntabot) - Raccolta differenziata San Giovanni la Punta (CT)
 
+[@DiffViagrandebot](https://telegram.me/DiffViagrandebot) - Raccolta differenziata Viagrande (CT)
+
 
 Requisiti
 ---------
