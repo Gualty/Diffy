@@ -7,13 +7,42 @@ $telegram = new Telegram($bot_token);
 
 $text = $telegram->Text();
 $chat_id = $telegram->ChatID();
+
+//Parametri e Connessione DB
+$servername = "localhost";
+$username = "username";
+$password = "password";
+$dbname = "nomedatabase";
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+//Fine Connessione DB
+
 if (($text == '/start') || ($text == 'Menu Principale')){
-    $option = [['Calendario'], ['Materiali'], ['Informazioni utili'], ['Crediti']];
+    $option = [['Calendario'], ['Materiali'], ['Informazioni utili'], ['Notifiche'], ['Crediti']];
 
     $keyb = $telegram->buildKeyBoard($option, $onetime = false);
     $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Seleziona una delle opzioni"];
     $telegram->sendMessage($content);
+
+    //Memorizza chatID in DB all'avvio
+    
+    //Cambio il valore 0 in 1 se preferisci che a tutti i nuovi utenti siano attivate le notifiche in automatico
+    $sql = "INSERT INTO differenziatabot (id_utente,attivo)
+    VALUES ($chat_id, '0')";
+
+    if (mysqli_query($conn, $sql)) {
+    echo "New record created successfully";
+    } else {
+    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+    }
+
+    mysqli_close($conn);
+    //Fine Memorizza chatID in DB
 }
+
 //Calendario
 //Questo script predispone il supporto a 2 aree diverse della città. Ma è possibile modificarlo per creare più zone
 if ($text == 'Calendario') {
@@ -232,5 +261,85 @@ if ($text == 'Crediti') {
     $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
     $telegram->sendMessage($content);
 }
+
+//Notifiche
+if ($text == 'Notifiche') {
+  $option = [['Si','No'],['Menu Principale']];
+  // Create a permanent custom keyboard
+  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*NOTIFICHE*\n\nVuoi ricevere una notifica dal *Lunedì al Sabato* per avvisarti di portare fuori i rifiuti?"];
+  $telegram->sendMessage($content);
+}
+if ($text == 'Si') {
+  //Modifica con i nomi delle zone
+  $option = [['Notifiche Zona A'], ['Notifiche Zona B'],['Notifiche'],['Menu Principale']];
+  // Create a permanent custom keyboard
+  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Seleziona la tua zona di residenza:*\nZona A\nZona B"];
+  $telegram->sendMessage($content);
+}
+if ($text == 'Notifiche Zona A') {
+  //La Zona A nel database è rilevabile con il numero 1
+  $option = [['Notifiche'],['Menu Principale']];
+  // Create a permanent custom keyboard
+  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Grazie per aver attivato le notifiche*\n\nPotrai cambiare idea in qualunque momento."];
+  $telegram->sendMessage($content);
+
+  //Notifiche in DB
+  $sql = "UPDATE differenziatabot SET attivo = '1',zona = '1' WHERE id_utente = $chat_id";
+
+  if (mysqli_query($conn, $sql)) {
+  echo "New record created successfully";
+  } else {
+  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+  }
+
+  mysqli_close($conn);
+  //Fine Memorizza chatID in DB
+}
+if ($text == 'Notifiche Zona B') {
+  //La Zona B nel database è rilevabile con il numero 2
+  $option = [['Notifiche'],['Menu Principale']];
+  // Create a permanent custom keyboard
+  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Grazie per aver attivato le notifiche*\n\nPotrai cambiare idea in qualunque momento."];
+  $telegram->sendMessage($content);
+
+  //Notifiche in DB
+
+  $sql = "UPDATE differenziatabot SET attivo = '1',zona = '2' WHERE id_utente = $chat_id";
+
+  if (mysqli_query($conn, $sql)) {
+  echo "New record created successfully";
+  } else {
+  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+  }
+
+  mysqli_close($conn);
+  //Fine Memorizza chatID in DB
+}
+if ($text == 'No') {
+  $option = [['Notifiche'],['Menu Principale']];
+  // Create a permanent custom keyboard
+  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Non riceverai notifiche*\n\nPotrai cambiare idea in qualunque momento."];
+  $telegram->sendMessage($content);
+
+  //Notifiche in DB
+
+  $sql = "UPDATE differenziatabot SET attivo = '0' WHERE id_utente = $chat_id";
+
+  if (mysqli_query($conn, $sql)) {
+  echo "New record created successfully";
+  } else {
+  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+  }
+
+  mysqli_close($conn);
+  //Fine Memorizza chatID in DB
+}
+// Fine Notifiche
+
 
 ?>
