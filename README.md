@@ -1,4 +1,4 @@
-# BOTDifferenziata ![Differenziata](https://apps.timwhitlock.info/static/images/emoji/emoji-apple/267b.png)
+# BOTDifferenziata ♻️
 Bot Telegram per la gestione della raccolta differenziata nei comuni.
 
 Funzioni
