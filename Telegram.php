@@ -12,6 +12,10 @@ if (file_exists('TelegramErrorLogger.php')) {
 class Telegram
 {
     /**
+     * Constant for type Inline Query.
+     */
+    const INLINE_QUERY = 'inline_query';
+    /**
      * Constant for type Callback Query.
      */
     const CALLBACK_QUERY = 'callback_query';
@@ -63,6 +67,7 @@ class Telegram
     private $bot_token = '';
     private $data = [];
     private $updates = [];
+    private $log_errors;
 
     /// Class constructor
 
@@ -71,10 +76,11 @@ class Telegram
      * \param $bot_token the bot token
      * \return an instance of the class.
      */
-    public function __construct($bot_token)
+    public function __construct($bot_token, $log_errors = true)
     {
         $this->bot_token = $bot_token;
         $this->data = $this->getData();
+        $this->log_errors = $log_errors;
     }
 
     /// Do requests to Telegram Bot API
@@ -613,6 +619,12 @@ class Telegram
      * <td>Longitude of location</td>
      * </tr>
      * <tr>
+     * <td>live_period</td>
+     * <td>Integer</td>
+     * <td>Optional</td>
+     * <td>Period in seconds for which the location will be updated (see <a href="https://telegram.org/blog/live-locations">Live Locations</a>, should be between 60 and 86400.</td>
+     * </tr>
+     * <tr>
      * <td>disable_notification</td>
      * <td>Boolean</td>
      * <td>Optional</td>
@@ -637,6 +649,202 @@ class Telegram
     public function sendLocation(array $content)
     {
         return $this->endpoint('sendLocation', $content);
+    }
+
+    /// Edit Message Live Location
+
+    /**
+     * Use this method to edit live location messages sent by the bot or via the bot (for <a href="https://core.telegram.org/bots/api#inline-mode">inline bots</a>). A location can be edited until its <em>live_period</em> expires or editing is explicitly disabled by a call to <a href="https://core.telegram.org/bots/api#stopmessagelivelocation">stopMessageLiveLocation</a>. On success, if the edited message was sent by the bot, the edited <a href="https://core.telegram.org/bots/api#message">Message</a> is returned, otherwise <em>True</em> is returned.<br/>Values inside $content:<br/>
+     * <table>
+     * <tr>
+     * <td><strong>Parameters</strong></td>
+     * <td><strong>Type</strong></td>
+     * <td><strong>Required</strong></td>
+     * <td><strong>Description</strong></td>
+     * </tr>
+     * <tr>
+     * <td>chat_id</td>
+     * <td>Integer or String</td>
+     * <td>Optional</td>
+     * <td>Required if <em>inline_message_id</em> is not specified. Unique identifier for the target chat or username of the target channel (in the format \c \@channelusername)</td>
+     * </tr>
+     * <tr>
+     * <td>message_id</td>
+     * <td>Integer</td>
+     * <td>Optional</td>
+     * <td>Required if <em>inline_message_id</em> is not specified. Identifier of the sent message</td>
+     * </tr>
+     * <tr>
+     * <td>inline_message_id</td>
+     * <td>String</td>
+     * <td>Optional</td>
+     * <td>Required if <em>chat_id</em> and <em>message_id</em> are not specified. Identifier of the inline message</td>
+     * </tr>
+     * <tr>
+     * <td>latitude</td>
+     * <td>Float number</td>
+     * <td>Yes</td>
+     * <td>Latitude of new location</td>
+     * </tr>
+     * <tr>
+     * <td>longitude</td>
+     * <td>Float number</td>
+     * <td>Yes</td>
+     * <td>Longitude of new location</td>
+     * </tr>
+     * <tr>
+     * <td>reply_markup</td>
+     * <td><a href="https://core.telegram.org/bots/api#inlinekeyboardmarkup">InlineKeyboardMarkup</a></td>
+     * <td>Optional</td>
+     * <td>A JSON-serialized object for a new <a href="https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating">inline keyboard</a>.</td>
+     * </tr>
+     * </table>
+     * \param $content the request parameters as array
+     * \return the JSON Telegram's reply.
+     */
+    public function editMessageLiveLocation(array $content)
+    {
+        return $this->endpoint('editMessageLiveLocation', $content);
+    }
+
+    /// Stop Message Live Location
+
+    /**
+     * Use this method to stop updating a live location message sent by the bot or via the bot (for <a href="https://core.telegram.org/bots/api#inline-mode">inline bots</a>) before <em>live_period</em> expires. On success, if the message was sent by the bot, the sent <a href="https://core.telegram.org/bots/api#message">Message</a> is returned, otherwise <em>True</em> is returned.<br/>Values inside $content:<br/>
+     * <table>
+     * <tr>
+     * <td><strong>Parameters</strong></td>
+     * <td><strong>Type</strong></td>
+     * <td><strong>Required</strong></td>
+     * <td><strong>Description</strong></td>
+     * </tr>
+     * <tr>
+     * <td>chat_id</td>
+     * <td>Integer or String</td>
+     * <td>Optional</td>
+     * <td>Required if <em>inline_message_id</em> is not specified. Unique identifier for the target chat or username of the target channel (in the format \c \@channelusername)</td>
+     * </tr>
+     * <tr>
+     * <td>message_id</td>
+     * <td>Integer</td>
+     * <td>Optional</td>
+     * <td>Required if <em>inline_message_id</em> is not specified. Identifier of the sent message</td>
+     * </tr>
+     * <tr>
+     * <td>inline_message_id</td>
+     * <td>String</td>
+     * <td>Optional</td>
+     * <td>Required if <em>chat_id</em> and <em>message_id</em> are not specified. Identifier of the inline message</td>
+     * </tr>
+     * <tr>
+     * <td>reply_markup</td>
+     * <td><a href="https://core.telegram.org/bots/api#inlinekeyboardmarkup">InlineKeyboardMarkup</a></td>
+     * <td>Optional</td>
+     * <td>A JSON-serialized object for a new <a href="https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating">inline keyboard</a>.</td>
+     * </tr>
+     * </table>
+     * \param $content the request parameters as array
+     * \return the JSON Telegram's reply.
+     */
+    public function stopMessageLiveLocation(array $content)
+    {
+        return $this->endpoint('stopMessageLiveLocation', $content);
+    }
+
+    /// Set Chat Sticker Set
+
+    /**
+     * Use this method to set a new group sticker set for a supergroup. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Use the field <em>can_set_sticker_set</em> optionally returned in <a href="https://core.telegram.org/bots/api#getchat">getChat</a> requests to check if the bot can use this method. Returns <em>True</em> on success.<br/>Values inside $content:<br/>
+     * <table>
+     * <tr>
+     * <td><strong>Parameters</strong></td>
+     * <td><strong>Type</strong></td>
+     * <td><strong>Required</strong></td>
+     * <td><strong>Description</strong></td>
+     * </tr>
+     * <tr>
+     * <td>chat_id</td>
+     * <td>Integer or String</td>
+     * <td>Yes</td>
+     * <td>Unique identifier for the target chat or username of the target supergroup (in the format <code>@supergroupusername</code>)</td>
+     * </tr>
+     * </table>
+     * \param $content the request parameters as array
+     * \return the JSON Telegram's reply.
+     */
+    public function setChatStickerSet(array $content)
+    {
+        return $this->endpoint('setChatStickerSet', $content);
+    }
+
+    /// Delete Chat Sticker Set
+
+    /**
+     * Use this method to delete a group sticker set from a supergroup. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Use the field <em>can_set_sticker_set</em> optionally returned in <a href="https://core.telegram.org/bots/api#getchat">getChat</a> requests to check if the bot can use this method. Returns <em>True</em> on success.<br/>Values inside $content:<br/>
+     * <table>
+     * <tr>
+     * <td><strong>Parameters</strong></td>
+     * <td><strong>Type</strong></td>
+     * <td><strong>Required</strong></td>
+     * <td><strong>Description</strong></td>
+     * </tr>
+     * <tr>
+     * <td>chat_id</td>
+     * <td>Integer or String</td>
+     * <td>Yes</td>
+     * <td>Unique identifier for the target chat or username of the target supergroup (in the format <code>@supergroupusername</code>)</td>
+     * </tr>
+     * </table>
+     * \param $content the request parameters as array
+     * \return the JSON Telegram's reply.
+     */
+    public function deleteChatStickerSet(array $content)
+    {
+        return $this->endpoint('deleteChatStickerSet', $content);
+    }
+
+    /// Send Media Group
+
+    /**
+     * Use this method to send a group of photos or videos as an album. On success, an array of the sent <a href="https://core.telegram.org/bots/api#message">Messages</a> is returned.<br/>Values inside $content:<br/>
+     * <table>
+     * <tr>
+     * <td><strong>Parameters</strong></td>
+     * <td><strong>Type</strong></td>
+     * <td><strong>Required</strong></td>
+     * <td><strong>Description</strong></td>
+     * </tr>
+     * <tr>
+     * <td>chat_id</td>
+     * <td>Integer or String</td>
+     * <td>Yes</td>
+     * <td>Unique identifier for the target chat or username of the target channel (in the format \c \@channelusername)</td>
+     * </tr>
+     * <tr>
+     * <td>media</td>
+     * <td>Array of <a href="https://core.telegram.org/bots/api#inputmedia">InputMedia</a></td>
+     * <td>Yes</td>
+     * <td>A JSON-serialized array describing photos and videos to be sent, must include 2–10 items</td>
+     * </tr>
+     * <tr>
+     * <td>disable_notification</td>
+     * <td>Boolean</td>
+     * <td>Optional</td>
+     * <td>Sends the messages <a href="https://telegram.org/blog/channels-2-0#silent-messages">silently</a>. Users will receive a notification with no sound.</td>
+     * </tr>
+     * <tr>
+     * <td>reply_to_message_id</td>
+     * <td>Integer</td>
+     * <td>Optional</td>
+     * <td>If the messages are a reply, ID of the original message</td>
+     * </tr>
+     * </table>
+     * \param $content the request parameters as array
+     * \return the JSON Telegram's reply.
+     */
+    public function sendMediaGroup(array $content)
+    {
+        return $this->endpoint('sendMediaGroup', $content);
     }
 
     /// Send Venue
@@ -1483,6 +1691,9 @@ class Telegram
         if ($type == self::EDITED_MESSAGE) {
             return @$this->data['edited_message']['chat']['id'];
         }
+        if ($type == self::INLINE_QUERY) {
+            return @$this->data['inline_query']['from']['id'];
+        }
 
         return $this->data['message']['chat']['id'];
     }
@@ -1907,6 +2118,12 @@ class Telegram
      * <td>Array of <a href="https://core.telegram.org/bots/api#labeledprice">LabeledPrice</a></td>
      * <td>Yes</td>
      * <td>Price breakdown, a list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)</td>
+     * </tr>
+     * <tr>
+     * <td>provider_data</td>
+     * <td>String</td>
+     * <td>Optional</td>
+     * <td>JSON-encoded data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.</td>
      * </tr>
      * <tr>
      * <td>photo_url</td>
@@ -2431,7 +2648,7 @@ class Telegram
      * <td>chat_id</td>
      * <td>Integer or String</td>
      * <td>Yes</td>
-     * <td>Unique identifier for the target chat or username of the target supergroup (in the format <code>@supergroupusername</code>)</td>
+     * <td>Unique identifier for the target chat or username of the target channel (in the format \c \@channelusername)</td>
      * </tr>
      * <tr>
      * <td>message_id</td>
@@ -2469,7 +2686,7 @@ class Telegram
      * <td>chat_id</td>
      * <td>Integer or String</td>
      * <td>Yes</td>
-     * <td>Unique identifier for the target chat or username of the target supergroup (in the format <code>@supergroupusername</code>)</td>
+     * <td>Unique identifier for the target chat or username of the target channel (in the format \c \@channelusername)</td>
      * </tr>
      * </table>
      * \param $content the request parameters as array
@@ -2525,9 +2742,9 @@ class Telegram
      * </tr>
      * <tr>
      * <td>png_sticker</td>
-     * <td><a href="#inputfile">InputFile</a></td>
+     * <td><a href="https://core.telegram.org/bots/api#inputfile">InputFile</a></td>
      * <td>Yes</td>
-     * <td><strong>Png</strong> image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. <a href="#sending-files">More info on Sending Files »</a></td>
+     * <td><strong>Png</strong> image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. <a href="https://core.telegram.org/bots/api#sending-files">More info on Sending Files »</a></td>
      * </tr>
      * </table>
      * \param $content the request parameters as array
@@ -2569,9 +2786,9 @@ class Telegram
      * </tr>
      * <tr>
      * <td>png_sticker</td>
-     * <td><a href="#inputfile">InputFile</a> or String</td>
+     * <td><a href="https://core.telegram.org/bots/api#inputfile">InputFile</a> or String</td>
      * <td>Yes</td>
-     * <td><strong>Png</strong> image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a <em>file_id</em> as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. <a href="#sending-files">More info on Sending Files »</a></td>
+     * <td><strong>Png</strong> image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a <em>file_id</em> as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. <a href="https://core.telegram.org/bots/api#sending-files">More info on Sending Files »</a></td>
      * </tr>
      * <tr>
      * <td>emojis</td>
@@ -2587,7 +2804,7 @@ class Telegram
      * </tr>
      * <tr>
      * <td>mask_position</td>
-     * <td><a href="#maskposition">MaskPosition</a></td>
+     * <td><a href="https://core.telegram.org/bots/api#maskposition">MaskPosition</a></td>
      * <td>Optional</td>
      * <td>Position where the mask should be placed on faces</td>
      * </tr>
@@ -2625,9 +2842,9 @@ class Telegram
      * </tr>
      * <tr>
      * <td>png_sticker</td>
-     * <td><a href="#inputfile">InputFile</a> or String</td>
+     * <td><a href="https://core.telegram.org/bots/api#inputfile">InputFile</a> or String</td>
      * <td>Yes</td>
-     * <td><strong>Png</strong> image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a <em>file_id</em> as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. <a href="#sending-files">More info on Sending Files »</a></td>
+     * <td><strong>Png</strong> image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a <em>file_id</em> as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. <a href="https://core.telegram.org/bots/api#sending-files">More info on Sending Files »</a></td>
      * </tr>
      * <tr>
      * <td>emojis</td>
@@ -2637,7 +2854,7 @@ class Telegram
      * </tr>
      * <tr>
      * <td>mask_position</td>
-     * <td><a href="#maskposition">MaskPosition</a></td>
+     * <td><a href="https://core.telegram.org/bots/api#maskposition">MaskPosition</a></td>
      * <td>Optional</td>
      * <td>Position where the mask should be placed on faces</td>
      * </tr>
@@ -2784,6 +3001,9 @@ class Telegram
     public function getUpdateType()
     {
         $update = $this->data;
+        if (isset($update['inline_query'])) {
+            return self::INLINE_QUERY;
+        }
         if (isset($update['callback_query'])) {
             return self::CALLBACK_QUERY;
         }
@@ -2844,9 +3064,11 @@ class Telegram
             $result = json_encode(['ok'=>false, 'curl_error_code' => curl_errno($ch), 'curl_error' => curl_error($ch)]);
         }
         curl_close($ch);
-        if (class_exists('TelegramErrorLogger')) {
-            $loggerArray = ($this->getData() == null) ? [$content] : [$this->getData(), $content];
-            TelegramErrorLogger::log(json_decode($result, true), $loggerArray);
+        if ($this->log_errors) {
+            if (class_exists('TelegramErrorLogger')) {
+                $loggerArray = ($this->getData() == null) ? [$content] : [$this->getData(), $content];
+                TelegramErrorLogger::log(json_decode($result, true), $loggerArray);
+            }
         }
 
         return $result;
