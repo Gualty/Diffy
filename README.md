@@ -30,6 +30,8 @@ BOT già attivi
 
 [@DiffViagrandebot](https://telegram.me/DiffViagrandebot) - Raccolta differenziata Viagrande (CT)
 
+[@DiffSanGregoriobot](https://telegram.me/DiffSanGregoriobot) - Raccolta differenziata San Gregorio di Catania (CT)
+
 
 Requisiti
 ---------
