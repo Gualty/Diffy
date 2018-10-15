@@ -14,33 +14,27 @@ $text = $telegram->Text();
 //Calcolo giorno della settimana e Messaggio
 $gds=date(D);
 
-// Zone:
-// 1: Zona A
-// 2: Zona B
 switch ($gds) {
     case "Mon":
-        $messaggio1 = "*Lunedì*\n_Zona A_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x8D\x89 *Organico*\nEd eventuali panni o pannoloni in un sacchetto separato\n\nEsporre dalle ore 20:00 alle ore 24:00";
-        $messaggio2 = "*Lunedì*\n_Zona B_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x93\xA6 *Carta e Cartone*\n\nEsporre dalle ore 20:00 alle ore 24:00";
+        $messaggio = "*Lunedì*\n\n*E' arrivato il momento di portare fuori:*\n\n🍗 *Organico*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
         break;
     case "Tue":
-        $messaggio1 = "*Martedì*\n_Zona A_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x93\xA6 *Carta e Cartone*\n\nEsporre dalle ore 20:00 alle ore 24:00";
-        $messaggio2 = "*Martedì*\n_Zona B_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x8D\x89 *Organico*\nEd eventuali panni o pannoloni in un sacchetto separato\n\nEsporre dalle ore 20:00 alle ore 24:00";
+        $messaggio = "*Martedì*\n\n*E' arrivato il momento di portare fuori:*\n\n📦 *Carta, Cartone e Cartoncino*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
         break;
     case "Wed":
-        $messaggio1 = "*Mercoledì*\n_Zona A_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x8D\x89 *Organico*\nEd eventuali panni o pannoloni in un sacchetto separato\n\nEsporre dalle ore 20:00 alle ore 24:00";
-        $messaggio2 = "*Mercoledì*\n_Zona B_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x8E\x88\xF0\x9F\x8D\xB7 *Plastica, Vetro e Lattine*\n\nEsporre dalle ore 20:00 alle ore 24:00";
+        $messaggio = "*Mercoledì*\n\n*E' arrivato il momento di portare fuori:*\n\n🍗 *Organico*\n\n🚼 *Pannolini e pannoloni*\n_Vanno esposti in sacchetti separati riconoscibili posti accanto il rifiuto differenziato giornaliero._\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
         break;
     case "Thu":
-        $messaggio1 = "*Giovedì*\n_Zona A_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x92\xA1 *Indifferenziato*\n\nEsporre dalle ore 20:00 alle ore 24:00";
-        $messaggio2 = "*Giovedì*\n_Zona B_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x8D\x89 *Organico*\nEd eventuali panni o pannoloni in un sacchetto separato\n\nEsporre dalle ore 20:00 alle ore 24:00";
+        $messaggio = "*Giovedì*\n\n*E' arrivato il momento di portare fuori:*\n\n🎈🥫 *Plastica e Metalli*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
         break;
     case "Fri":
-        $messaggio1 = "*Venerdì*\n_Zona A_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x8D\x89 *Organico*\nEd eventuali panni o pannoloni in un sacchetto separato\n\nEsporre dalle ore 20:00 alle ore 24:00";
-        $messaggio2 = "*Venerdì*\n_Zona B_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x92\xA1 *Indifferenziato*\n\nEsporre dalle ore 20:00 alle ore 24:00";
+        $messaggio = "*Venerdì*\n\n*E' arrivato il momento di portare fuori:*\n\n🍗 *Organico*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
+        break;
+    case "Sat":
+        $messaggio = "*Sabato*\n\n*E' arrivato il momento di portare fuori:*\n\n🍷 *Vetro*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
         break;
     case "Sun":
-        $messaggio1 = "*Domenica*\n_Zona A_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x8E\x88\xF0\x9F\x8D\xB7 *Plastica, Vetro e Lattine*\n\nEsporre dalle ore 20:00 alle ore 24:00";
-        $messaggio2 = "*Domenica*\n_Zona B_\n\n*E' arrivato il momento di portare fuori:*\n\n\xF0\x9F\x8D\x89 *Organico*\nEd eventuali panni o pannoloni in un sacchetto separato\n\nEsporre dalle ore 20:00 alle ore 24:00";
+        $messaggio = "*Domenica*\n\n*E' arrivato il momento di portare fuori:*\n\n💡 *Indifferenziato*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
         break;
     default:
         break;
@@ -48,61 +42,40 @@ switch ($gds) {
 
 //Fine Calcolo giorno della settimana e Messaggio
 
-//Parametri e Connessione DB
+//Connessione DB
 $servername = "localhost";
-$username = "username";
-$password = "password";
-$dbname = "nomedatabase";
+$username = "USERNAME";
+$password = "";
+$dbname = "differenziatabot";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 // Check connection
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
+//N.B. RIPORTARE I DATI DB ANCHE NEL FILE index.php
 //Fine Connessione DB
 
-// 1: Zona A
-$sql = "SELECT id_utente FROM differenziatabot WHERE attivo='1' AND zona= '1'";
+//INVIO NOTIFICHE A CHI LO HA RICHIESTO
+$sql = "SELECT id_utente FROM differenziatabot WHERE attivo='1'"; //SOLO A CHI HA RICHIESTO LA NOTIFICA VIENE INVIATA
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     // output data of each row
     while($row = mysqli_fetch_assoc($result)) {
         $chat_id =$row["id_utente"];
-
+        $reply = $messaggio;
         //Template Messaggio
-        $reply = $messaggio1;
-        $option = [['Carta e Cartone','Plastica'], ['Vetro e Lattine','Organico'], ['Indifferenziato','Ingombranti'],['Menu Principale']];
+        $option = [['📦 Carta, Cartone e Cartoncino','🎈🥫 Plastica e Metalli'], ['🍷 Vetro', '🍗  Organico','💡 Indifferenziato'],['🗑️ Altri rifiuti'],['Menu Principale']];
         // Create a permanent custom keyboard
         $keyb = $telegram->buildKeyBoard($option, $onetime = false);
         $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $reply,'parse_mode' => 'markdown'];
+
 
         $telegram->sendMessage($content);
         //Fine Template Messaggio
     }
 } else {
-    echo "0 results Zona A";
+    echo "0 results";
 }
-
-// 2: Zona B
-$sql = "SELECT id_utente FROM differenziatabot WHERE attivo='1' AND zona= '2'";
-$result1 = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result1) > 0) {
-    // output data of each row
-    while($row1 = mysqli_fetch_assoc($result1)) {
-        $chat_id =$row1["id_utente"];
-
-        //Template Messaggio
-        $reply = $messaggio2;
-        $option = [['Carta e Cartone','Plastica'], ['Vetro e Lattine','Organico'], ['Indifferenziato','Ingombranti'],['Menu Principale']];
-        // Create a permanent custom keyboard
-        $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-        $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $reply,'parse_mode' => 'markdown'];
-        $telegram->sendMessage($content);
-        //Fine Template Messaggio
-    }
-} else {
-    echo "0 results Zona B";
-}
-
+//FINE INVIO NOTIFICHE A CHI LO HA RICHIESTO
 ?>

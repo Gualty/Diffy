@@ -2,37 +2,45 @@
 include 'Telegram.php';
 // Imposta TOKEN Telegram
 $bot_token = 'INSERIRETOKEN';
-
+// Instances the class
 $telegram = new Telegram($bot_token);
-
+/* If you need to manually take some parameters
+*  $result = $telegram->getData();
+*  $text = $result["message"] ["text"];
+*  $chat_id = $result["message"] ["chat"]["id"];
+*/
+// Take text and chat_id from the message
 $text = $telegram->Text();
 $chat_id = $telegram->ChatID();
+$firstname = $telegram->FirstName();
 
-//Parametri e Connessione DB
+//Connessione DB
 $servername = "localhost";
-$username = "username";
-$password = "password";
-$dbname = "nomedatabase";
+$username = "USERNAME";
+$password = "";
+$dbname = "differenziatabot";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 // Check connection
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
+
+//N.B. RIPORTARE I DATI DB ANCHE IN FONDO ALLA SEZIONE NOTIFICHE, NELLA SEZIONE /start qui sotto e nel file push.php
 //Fine Connessione DB
 
-if (($text == '/start') || ($text == 'Menu Principale')){
-    $option = [['Calendario'], ['Materiali'], ['Informazioni utili'], ['Notifiche'], ['Crediti']];
-
+// QUESTA PARTE APPARE SOLO ALLA PRIMA ATTIVAZIONE DEL BOT
+if ($text == '/start'){
+    $option = [['🗑️ Che rifiuti posso buttare stasera?'],['📅 Calendario','📄 Materiali'], ['ℹ️ Informazioni utili','📬 Notifiche'], ['NOMECITTA non è la tua città?'], ['Crediti']];
+    // Create a permanent custom keyboard
     $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-    $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Seleziona una delle opzioni"];
+    $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb,'parse_mode' => 'markdown', 'text' => "♻️ Ciao ".$firstname.", sono *Diffy*!\n\nTi aiuterò con la raccolta differenziata di [NOMECITTA]!\n\n_Come posso aiutarti?_"];
     $telegram->sendMessage($content);
 
-    //Memorizza chatID in DB all'avvio
-    
-    //Cambio il valore 0 in 1 se preferisci che a tutti i nuovi utenti siano attivate le notifiche in automatico
+    //Memorizza chatID in DB
+    //SOSTITUIRE differenziatabot CON IL NOME DEL DB SCELTO
     $sql = "INSERT INTO differenziatabot (id_utente,attivo)
-    VALUES ($chat_id, '0')";
-
+    VALUES ($chat_id, '1')";
+    //IN AUTOMATICO SARANNO ATTIVE LO NOTIFICHE PER TUTTI. CAMBIARE IL VALORE 1 in 0 QUI SOPRA PER RENDERE DISATTIVE DI DEFAULT
     if (mysqli_query($conn, $sql)) {
     echo "New record created successfully";
     } else {
@@ -42,244 +50,206 @@ if (($text == '/start') || ($text == 'Menu Principale')){
     mysqli_close($conn);
     //Fine Memorizza chatID in DB
 }
+//FINE /start
 
-//Calendario
-//Questo script predispone il supporto a 2 aree diverse della città. Ma è possibile modificarlo per creare più zone
-if ($text == 'Calendario') {
-  $option = [['Zona A'], ['Zona B'], ['Menu Principale']];
-
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Seleziona la tua zona di residenza:*\nZona A\nZona B"];
-  $telegram->sendMessage($content);
+//MENU PRINCIPALE
+if ($text == 'Menu Principale'){
+    $option = [['🗑️ Che rifiuti posso buttare stasera?'],['📅 Calendario','📄 Materiali'], ['ℹ️ Informazioni utili','📬 Notifiche'], ['NOMECITTA non è la tua città?'], ['Crediti']];
+    // Create a permanent custom keyboard
+    $keyb = $telegram->buildKeyBoard($option, $onetime = false);
+    $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb,'parse_mode' => 'markdown', 'text' => "♻️ Ciao ".$firstname.", sono *Diffy*!\n\n_Come posso aiutarti oggi?_"];
+    $telegram->sendMessage($content);
 }
-if ($text == 'Zona A') {
-  $option = [['Lunedì Zona A'], ['Martedì Zona A'], ['Mercoledì Zona A'], ['Giovedì Zona A'], ['Venerdì Zona A'],['Sabato Zona A'],['Menu Principale']];
+//FINE MENU PRINCIPALE
 
+//CALENDARIO
+if ($text == '📅 Calendario') {
+  $option = [['Lunedì'], ['Martedì'], ['Mercoledì'], ['Giovedì'], ['Venerdì'], ['Sabato'], ['Domenica'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Seleziona il giorno della settimana"];
-  $telegram->sendMessage($content);
-}
-if ($text == 'Zona B') {
-  $option = [['Lunedì Zona B'], ['Martedì Zona B'], ['Mercoledì Zona B'], ['Giovedì Zona B'], ['Venerdì Zona B'],['Sabato Zona B'],['Menu Principale']];
-
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Seleziona il giorno della settimana"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Seleziona il giorno della settimana"];
   $telegram->sendMessage($content);
 }
 
-//Zona A
-if ($text == 'Lunedì Zona A') {
-  $option = [['Organico'], ['Zona A'],['Menu Principale']];
+//Giorni della settimana
 
+//Se venissero apportate modifice, riportare le stesse anche sul file push.php
+if ($text == 'Lunedì') {
+  $option = [['💡 Indifferenziato'], ['📅 Calendario'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Lunedì in Zona A\n\n\xF0\x9F\x8D\x89 *Organico*\n\nEsporre dalle ore 20:00 alle ore 24:00"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Lunedì*\n\n💡 *Indifferenziato*\n\n*Esposizione*\n_Domenica dalle ore 20:00 alle ore 22:30_"];
   $telegram->sendMessage($content);
 }
-if ($text == 'Martedì Zona A') {
-  $option = [['Carta e Cartone'], ['Zona A'],['Menu Principale']];
-
+if ($text == 'Martedì') {
+  $option = [['🍗  Organico'], ['📅 Calendario'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Martedì in Zona A\n\n\xF0\x9F\x93\xA6 *Carta e Cartone*\n\nEsporre dalle ore 20:00 alle ore 24:00"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Martedì*\n\n🍗 *Organico*\n\n*Esposizione*\n_Lunedì dalle ore 20:00 alle ore 22:30_"];
   $telegram->sendMessage($content);
 }
-if ($text == 'Mercoledì Zona A') {
-  $option = [['Organico'], ['Zona A'],['Menu Principale']];
-
+if ($text == 'Mercoledì') {
+  $option = [['📦 Carta, Cartone e Cartoncino'], ['📅 Calendario'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Mercoledì in Zona A\n\n\xF0\x9F\x8D\x89 *Organico*\n\n\nEsporre dalle ore 20:00 alle ore 24:00"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Mercoledì\n\n📦 *Carta, Cartone e Cartoncino*\n\n*Esposizione*\n_Martedì dalle ore 20:00 alle ore 22:30_"];
   $telegram->sendMessage($content);
 }
-if ($text == 'Giovedì Zona A') {
-  $option = [['Indifferenziato'], ['Zona A'],['Menu Principale']];
-
+if ($text == 'Giovedì') {
+  $option = [['🍗  Organico'], ['📅 Calendario'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Giovedì in Zona A\n\n\xF0\x9F\x92\xA1 *Indifferenziato*\n\nEsporre dalle ore 20:00 alle ore 24:00"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Giovedì*\n\n🍗 *Organico*\n\n🚼 *Pannolini e pannoloni*\n_Vanno esposti in sacchetti separati riconoscibili posti accanto il rifiuto differenziato giornaliero._\n\n*Esposizione*\n_Mercoledì dalle ore 20:00 alle ore 22:30_"];
   $telegram->sendMessage($content);
 }
-if ($text == 'Venerdì Zona A') {
-  $option = [['Organico'], ['Zona A'],['Menu Principale']];
-
+if ($text == 'Venerdì') {
+  $option = [['🎈🥫 Plastica e Metalli'], ['📅 Calendario'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Venerdì in Zona A\n\n\xF0\x9F\x8D\x89 *Organico*\n\n\nEsporre dalle ore 20:00 alle ore 24:00"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Venerdì*\n\n🎈🥫 *Plastica e Metalli*\n\n*Esposizione*\n_Giovedì dalle ore 20:00 alle ore 22:30_"];
   $telegram->sendMessage($content);
 }
-if ($text == 'Sabato Zona A') {
-  $option = [['Plastica', 'Vetro e Lattine'], ['Zona A'],['Menu Principale']];
-
+if ($text == 'Sabato') {
+  $option = [['🍗  Organico'], ['📅 Calendario'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Domenica in Zona A\n\n\xF0\x9F\x8E\x88\xF0\x9F\x8D\xB7 *Plastica, Vetro e Lattine*\n\nEsporre dalle ore 20:00 alle ore 24:00"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Sabato*\n\n🍗 *Organico*\n\n*Esposizione*\n_Venerdì dalle ore 20:00 alle ore 22:30_"];
   $telegram->sendMessage($content);
 }
-
-//Zona B
-if ($text == 'Lunedì Zona B') {
-  $option = [['Carta e Cartone'], ['Zona B'],['Menu Principale']];
-
+if ($text == 'Domenica') {
+  $option = [['🍷 Vetro'], ['📅 Calendario'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Lunedì in Zona B\n\n\xF0\x9F\x93\xA6 *Carta e Cartone*\n\nEsporre dalle ore 20:00 alle ore 24:00"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Domenica*\n\n🍷 *Vetro*\n\n*Esposizione*\n_Sabato dalle ore 20:00 alle ore 22:30_"];
   $telegram->sendMessage($content);
 }
-if ($text == 'Martedì Zona B') {
-  $option = [['Organico'], ['Zona B'],['Menu Principale']];
+//FINE CALENDARIO
 
+//MATERIALI
+if ($text == '📄 Materiali') {
+  $option = [['📦 Carta, Cartone e Cartoncino','🎈🥫 Plastica e Metalli'], ['🍷 Vetro', '🍗  Organico','💡 Indifferenziato'],['🗑️ Altri rifiuti'],['Menu Principale']];
+  // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Martedì in Zona B\n\n\xF0\x9F\x8D\x89 *Organico*\n\n\nEsporre dalle ore 20:00 alle ore 24:00"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Seleziona il materiale"];
   $telegram->sendMessage($content);
 }
-if ($text == 'Mercoledì Zona B') {
-  $option = [['Plastica', 'Vetro e Lattine'], ['Zona B'],['Menu Principale']];
-
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Mercoledì in Zona B\n\n\xF0\x9F\x8E\x88\xF0\x9F\x8D\xB7 *Plastica, Vetro e Lattine*\n\nEsporre dalle ore 20:00 alle ore 24:00"];
-  $telegram->sendMessage($content);
-}
-if ($text == 'Giovedì Zona B') {
-  $option = [['Organico'], ['Zona B'],['Menu Principale']];
-
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Giovedì in Zona B\n\n\xF0\x9F\x8D\x89 *Organico*\n\n\nEsporre dalle ore 20:00 alle ore 24:00"];
-  $telegram->sendMessage($content);
-}
-if ($text == 'Venerdì Zona B') {
-  $option = [['Indifferenziato'], ['Zona B'],['Menu Principale']];
-
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Venerdì in Zona B\n\n\xF0\x9F\x92\xA1 *Indifferenziato*\n\nEsporre dalle ore 20:00 alle ore 24:00"];
-  $telegram->sendMessage($content);
-}
-if ($text == 'Sabato Zona B') {
-  $option = [['Organico'], ['Zona B'],['Menu Principale']];
-
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Domenica in Zona B\n\n\xF0\x9F\x8D\x89 *Organico*\n\n\nEsporre dalle ore 20:00 alle ore 24:00"];
-  $telegram->sendMessage($content);
-}
-
-//Materiali
-if ($text == 'Materiali') {
-  $option = [['Carta e Cartone','Plastica'], ['Vetro e Lattine','Organico'], ['Indifferenziato','Ingombranti'],['Menu Principale']];
-
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "Seleziona il materiale"];
-  $telegram->sendMessage($content);
-}
-if ($text == 'Carta e Cartone') {
-    //DESCRIZIONE
-    $reply = "\xF0\x9F\x93\xA6 Carta e Cartone";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+if ($text == '📦 Carta, Cartone e Cartoncino') {
+  //DESCRIZIONE
+    $reply = "\xF0\x9F\x93\xA6 Carta, Cartone e Cartoncino";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI AMMESSI
-    $reply = "\xE2\x9C\x85\nGiornali e riviste\nLibri e quaderni\nFotocopie e fogli vari\nCartoni piegati\nImballaggi e scarti per alimenti";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+  //OK
+    $reply = "\xE2\x9C\x85\nSacchetti di carta\nScatole\nImballaggi di cartone e cartoncino\nCarta da pacchi pulita\nCartoni per bevande e prodotti alimentari\nGiornali\nRiviste\nQuaderni";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI NON AMMESSI
-    $reply = "\xE2\x9D\x8C\nNylon\nCellophane\nCarta oleata\nCarta carbone e chimica\nPergamena\nScontrini";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+    //NO
+    $reply = "\xE2\x9D\x8C\nCarta sporca\nFazzolettini e tovaglioli\nCartoni della pizza sporchi\nScontrini fiscali di carta termica\nCarta chimica per fax\nCarta oleata\nCarta plastificata";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
 }
-if ($text == 'Plastica') {
-    //DESCRIZIONE
-    $reply = "\xF0\x9F\x8E\x88 Plastica";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+if ($text == '🎈🥫 Plastica e Metalli') {
+  //DESCRIZIONE
+    $reply = "🎈🥫 Plastica e Metalli";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI AMMESSI
-    $reply = "\xE2\x9C\x85\nBottiglie di acqua e bibite\nBottiglie di shampoo\nFlaconi per detergenti\nFlaconi per prodotti cosmetici liquidi\nContenitori per liquidi in genere\nFilm di nylon\nBorsette di polistirolo";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+  //OK
+    $reply = "\xE2\x9C\x85\nBottiglie e flaconi di plastica\nBuste e pellicole in plastica\nVaschette e vasetti di yogurth in plastica\nPiatti e bicchieri in plastica\nBombolette spray (vuote)\nTubetti, lattine e vaschette in alluminio\nFogli sottili, scatolette, barattoli e altri contenitori metallici\nTappi a corona, chiusure e coperchi\nLatte per olio";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI NON AMMESSI
-    $reply = "\xE2\x9D\x8C\nPiatti di plastica\nBicchieri di plastica\nPosate di plastica";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
-    $telegram->sendMessage($content);
-}
-if ($text == 'Vetro e Lattine') {
-    //DESCRIZIONE
-    $reply = "\xF0\x9F\x8D\xB7 Vetro e Lattine";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
-    $telegram->sendMessage($content);
-    //MATERIALI AMMESSI
-    $reply = "\xE2\x9C\x85\nBottiglie in vetro\nVasi in vetro\nBarattoli in vetro\nLattine in alluminio (simbolo AL)\nScatolette e lattine\nContenitori in metallo (pelati, tonno)";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
-    $telegram->sendMessage($content);
-    //MATERIALI NON AMMESSI
-    $reply = "\xE2\x9D\x8C\nBicchieri\nOggetti in ceramica e porcellana\nLampadine\nContenitori etichettati \"T\" e \"F\"\nVetri vari anche se rotti";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+    //NO
+    $reply = "\xE2\x9D\x8C\nPosate di plastica\nGiocattoli\nPenne e pennarelli\nSpazzolini da denti\nOggetti in metallo\nPentole e posate\nFil di ferro";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
 }
-if ($text == 'Indifferenziato') {
-    //DESCRIZIONE
-    $reply = "\xF0\x9F\x92\xA1 Indifferenziato";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+if ($text == '🍷 Vetro') {
+  //DESCRIZIONE
+    $reply = "\xF0\x9F\x8D\xB7 Vetro";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI AMMESSI
-    $reply = "\xE2\x9C\x85\nGomma\nCassette audio e video\nCD\nCellophane\nPiatti e posate in plastica\nCarta oleata o plastificata\nCalze in nylon\nCocci di ceramica\nPannolini\nAssorbenti\npolveri dell'aspirapolvere\nScarpe vecchie\nLampadine";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+  //OK
+    $reply = "\xE2\x9C\x85\nBottiglie\nVasetti";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI NON AMMESSI
-    $reply = "\xE2\x9D\x8C\nRifiuti riciclabili\n";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+    //NO
+    $reply = "\xE2\x9D\x8C\nSpecchi\nCeramica\nPorcellana\nLampadine\nNeon\nLastre di vetro";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
 }
-if ($text == 'Organico') {
-    //DESCRIZIONE
-    $reply = "\xF0\x9F\x8D\x89 Organico";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+if ($text == '💡 Indifferenziato') {
+  //DESCRIZIONE
+    $reply = "💡 Indifferenziato";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI AMMESSI
-    $reply = "\xE2\x9C\x85\nScarti di cucina\nAvanzi di cibo\nGusci d'uovo\nScarti di verdura e frutta\nFondi di caffè\nFiltri di the\nLettiere di piccoli animali domestici\nFiori recisi e piante domestiche\nSalviette di carta unte\nCeneri spente di caminetti\nPiccole ossa e gusci di cozze";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+  //OK
+    $reply = "\xE2\x9C\x85\nPosate di plastica\nPannolini\nMusicassette e VHS\nCarta carbone\nCarta plastificata\nCocci di ceramica, porcellana\nTerracotta\nCristalli e lastre di vetro\nGomma";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI NON AMMESSI
-    $reply = "\xE2\x9D\x8C\nPannolini\nAssorbenti\nStracci anche se bagnati";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+    //NO
+    $reply = "\xE2\x9D\x8C\nTutti i materiali riciclabili\nPile e farmaci\nMateriale edile\nBatterie auto\nSfalci di potatura\nApparecchiature elettroniche\nMateriali tossici e pericolosi";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
+    $telegram->sendMessage($content);
+}
+if ($text == '🍗  Organico') {
+  //DESCRIZIONE
+    $reply = "🍗  Organico";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
+    $telegram->sendMessage($content);
+  //OK
+    $reply = "\xE2\x9C\x85\nAvanzi di cucina cotti e crudi\nScarti di frutta e verdura\nResidui di pane\nGusci di uova e ossa\nFondi di caffè\nFiltri di tè\nSegatura e trucioli\nFazzoletti di carta unti\nAvanzi di carne, pesce, salumi\nCenere";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
+    $telegram->sendMessage($content);
+    //PANNOLINI E pannoloni
+    $reply = "🚼 Pannolini e pannoloni vanno esposti in sacchetti separati riconoscibili posti accanto il rifiuto differenziato giornaliero. Sarà effettuato un ritiro apposito ogni giovedì.";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
+    $telegram->sendMessage($content);
+    //NO
+    $reply = "\xE2\x9D\x8C\nPiatti e bicchieri di carta\nCarcasse di animali\nOlio di frittura\nPannolini ed assorbenti\nGrandi quantità di ossa e gusci di frutti di mare\nCibi ancora caldi";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
 }
 
-if ($text == 'Ingombranti') {
-    //DESCRIZIONE
-    $reply = "\xF0\x9F\x92\xBB Ingombranti";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+if ($text == '🗑️ Altri rifiuti') {
+  //DESCRIZIONE
+    $reply = "🗑️ Altri rifiuti";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
-    //MATERIALI AMMESSI
-    $reply = "\xE2\x9C\x85\nTV\nArredi e materassi\nComputer e stampanti\nPersiane e tapparelle\nStufe - Termosifoni\nPiccoli elettrodomestici\nGrandi elettrodomestici";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+  //OK
+    $reply = "*PANNOLINI:* Nella stessa giornata di ritiro della frazione umido è possibile conferire in un *sacchetto separato pannolini e pannoloni* per utenze con bambini e anziani (*previo accordo con gli operatori*).\n\n*SFALCI:* Nelle giornate di raccolta della frazione umida sarà ammessa l'esposizione di un *massimo di 2 sacchi trasparenti da 50 lt* (peso massimo *10Kg per sacco*) di *scarti di prato*. Quantitativi superiori potranno essere conferiti presso il sito indicato dal comune, nelle stesse giornate di raccolta.\n\n*INGOMBRANTI:* Il ritiro a domicilio degli ingombranti è *gratuito*. Per usufruire di questo servizio chiamare il *Numero Verde XXXXXXXXXX* solo dai numeri fissi.\n*Lun/Ven* dalle *09:00* alle *13:00*.\n\n*PILE E FARMACI:* I rifiuti particolari, come le *pile esauste e i farmaci scaduti*, devono essere conferiti presso gli *appositi contenitori* localizzati in vari punti del paese.";
+    $content = ['chat_id' => $chat_id, 'text' => $reply, 'parse_mode' => 'markdown'];
     $telegram->sendMessage($content);
-    //MATERIALI NON AMMESSI
+    //NO
     $reply = "\xE2\x9D\x8C\nSanitari\nMateriale edile\nMateriale ferroso\nMateriali tossici e pericolosi";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
 }
+//FINE MATERIALI
 
-//Informazioni utili dal comune
-if ($text == 'Informazioni utili') {
-    $reply = "*Suggerimenti forniti dal Comune:*\n\n\xF0\x9F\x93\xB1 *NUMERO: 0000000000*\n\n1) INSERISCI SUGGERIMENTO.*\n\n2) INSERISCI SUGGERIMENTO.*\n\n3) INSERISCI SUGGERIMENTO.\n\n4) INSERISCI SUGGERIMENTO. \n\n5) INSERISCI SUGGERIMENTO";
+//INFORMAZIONI UTILI
+if ($text == 'ℹ️ Informazioni utili') {
+    $reply = "*Suggerimenti forniti dal Comune:*\n\n☎️*NUMERO VERDE: XXXXXXXXXXX*\n\n\xF0\x9F\x93\xB1 *NUMERO DA CELL: XXXXXXXXXX*\n_Per informazioni, segnalazioni, suggerimenti,
+reclami, ritiro gratuito ingombranti e apparecchiature elettriche ed elettroniche, servizio di raccolta differenziata porta a porta._\n\n📍 *CENTRI DI RACCOLTA*\n\n*Viale XXXXXX*\n_Zona XXXXXX_\n🗺️ [INSERIRE LINK GOOGLE MAPS]\n\n*Via XXXXXX*\n_Zona XXXXXXX_\n🗺️ [INSERIRE LINK GOOGLE MAPS]\n\n🕘 *ORARIO DI CONFERIMENTO*\n\n_Dal lunedì al sabato_\ndalle 9.00 alle 12.30 e dalle 14.00 alle 19.00\n\n_Domenica_\nDomenica dalle 9.00 alle 12.30";
     $content = ['chat_id' => $chat_id, 'text' => $reply, 'parse_mode' => 'markdown'];
     $telegram->sendMessage($content);
 }
-//Crediti
+//FINE INFORMAZIONI UTILI
+
+//CREDITI
 if ($text == 'Crediti') {
-    $reply = "Questo Bot Telegram non è in alcun modo affiliato al Comune di XXXXXXXXXXX.\n\nE' un semplice strumento per il cittadino che trae informazioni dal sito istituzionale del comune: http://www.sitocomune.it/";
-    $content = ['chat_id' => $chat_id, 'parse_mode' => 'markdown', 'text' => $reply];
+    $reply = "Questo Bot Telegram non è in alcun modo affiliato al Comune di XXXXXXXX o all'azienda preposta alla raccolta.\n\nE' un semplice strumento per il cittadino che trae informazioni dal sito istituzionale del comune: [INSERIRE LINK SITO COMUNE]";
+    $content = ['chat_id' => $chat_id, 'text' => $reply];
     $telegram->sendMessage($content);
 }
+//FINE CREDITI
 
-//Notifiche
-if ($text == 'Notifiche') {
-  $option = [['Si','No'],['Menu Principale']];
+//NOTIFICHE
+if ($text == '📬 Notifiche') {
+  $option = [['Si','No'], /*['No'],*/['Menu Principale']];
   // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*NOTIFICHE*\n\nVuoi ricevere una notifica dal *Lunedì al Sabato* per avvisarti di portare fuori i rifiuti?"];
+  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*NOTIFICHE*\n\nVuoi ricevere una notifica dal *Lunedì alla Domenica* per avvisarti di portare fuori i rifiuti?"];
   $telegram->sendMessage($content);
 }
 if ($text == 'Si') {
-  //Modifica con i nomi delle zone
-  $option = [['Notifiche Zona A'], ['Notifiche Zona B'],['Notifiche'],['Menu Principale']];
-  // Create a permanent custom keyboard
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Seleziona la tua zona di residenza:*\nZona A\nZona B"];
-  $telegram->sendMessage($content);
-}
-if ($text == 'Notifiche Zona A') {
-  //La Zona A nel database è rilevabile con il numero 1
   $option = [['Notifiche'],['Menu Principale']];
   // Create a permanent custom keyboard
   $keyb = $telegram->buildKeyBoard($option, $onetime = false);
@@ -287,28 +257,7 @@ if ($text == 'Notifiche Zona A') {
   $telegram->sendMessage($content);
 
   //Notifiche in DB
-  $sql = "UPDATE differenziatabot SET attivo = '1',zona = '1' WHERE id_utente = $chat_id";
-
-  if (mysqli_query($conn, $sql)) {
-  echo "New record created successfully";
-  } else {
-  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-  }
-
-  mysqli_close($conn);
-  //Fine Memorizza chatID in DB
-}
-if ($text == 'Notifiche Zona B') {
-  //La Zona B nel database è rilevabile con il numero 2
-  $option = [['Notifiche'],['Menu Principale']];
-  // Create a permanent custom keyboard
-  $keyb = $telegram->buildKeyBoard($option, $onetime = false);
-  $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb, 'parse_mode' => 'markdown', 'text' => "*Grazie per aver attivato le notifiche*\n\nPotrai cambiare idea in qualunque momento."];
-  $telegram->sendMessage($content);
-
-  //Notifiche in DB
-
-  $sql = "UPDATE differenziatabot SET attivo = '1',zona = '2' WHERE id_utente = $chat_id";
+  $sql = "UPDATE differenziatabot SET attivo = '1' WHERE id_utente = $chat_id";
 
   if (mysqli_query($conn, $sql)) {
   echo "New record created successfully";
@@ -327,7 +276,6 @@ if ($text == 'No') {
   $telegram->sendMessage($content);
 
   //Notifiche in DB
-
   $sql = "UPDATE differenziatabot SET attivo = '0' WHERE id_utente = $chat_id";
 
   if (mysqli_query($conn, $sql)) {
@@ -339,7 +287,57 @@ if ($text == 'No') {
   mysqli_close($conn);
   //Fine Memorizza chatID in DB
 }
-// Fine Notifiche
+//FINE NOTIFICHE
 
+//Che rifiuti posso buttare stasera?
+if ($text == '🗑️ Che rifiuti posso buttare stasera?'){
+    $option = [['📅 Calendario','📄 Materiali'],['ℹ️ Informazioni utili'],['Menu Principale']];
 
+    //Calcolo giorno della settimana e Messaggio
+    $gds=date(D);
+
+    switch ($gds) {
+        case "Mon":
+            $messaggio = "*Lunedì*\n\n*Stasera puoi portare fuori:*\n\n🍗 *Organico*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
+            break;
+        case "Tue":
+            $messaggio = "*Martedì*\n\n*Stasera puoi portare fuori:*\n\n📦 *Carta, Cartone e Cartoncino*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
+            break;
+        case "Wed":
+            $messaggio = "*Mercoledì*\n\n*Stasera puoi portare fuori:*\n\n🍗 *Organico*\n\n🚼 *Pannolini e pannoloni*\n_Vanno esposti in sacchetti separati riconoscibili posti accanto il rifiuto differenziato giornaliero._\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
+            break;
+        case "Thu":
+            $messaggio = "*Giovedì*\n\n*Stasera puoi portare fuori:*\n\n🎈🥫 *Plastica e Metalli*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
+            break;
+        case "Fri":
+            $messaggio = "*Venerdì*\n\n*Stasera puoi portare fuori:*\n\n🍗 *Organico*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
+            break;
+        case "Sat":
+            $messaggio = "*Sabato*\n\n*Stasera puoi portare fuori:*\n\n🍷 *Vetro*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
+            break;
+        case "Sun":
+            $messaggio = "*Domenica*\n\n*Stasera puoi portare fuori:*\n\n💡 *Indifferenziato*\n\n*Esposizione*\n_Dalle ore 20:00 alle ore 22:30_";
+            break;
+        default:
+            break;
+    }
+
+    //Fine Calcolo giorno della settimana e Messaggio
+
+    // Create a permanent custom keyboard
+    $keyb = $telegram->buildKeyBoard($option, $onetime = false);
+    $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb,'parse_mode' => 'markdown', 'text' => $messaggio];
+    $telegram->sendMessage($content);
+}
+//Fine Che rifiuti posso buttare stasera?
+
+//NOMECITTA non è la tua città?
+if ($text == 'NOMECITTA non è la tua città?'){
+    $option = [['🗑️ Che rifiuti posso buttare stasera?'],['📅 Calendario','📄 Materiali'], ['ℹ️ Informazioni utili','📬 Notifiche'], ['NOMECITTA non è la tua città?'], ['Crediti']];
+    // Create a permanent custom keyboard
+    $keyb = $telegram->buildKeyBoard($option, $onetime = false);
+    $content = ['chat_id' => $chat_id, 'reply_markup' => $keyb,'parse_mode' => 'markdown', 'text' => "♻️ *".$firstname."*, XXXXXX non è la tua città?\n\nEcco i Bot Telegram delle altre città siciliane:\n\n🤖 *Aci Catena* http://bit.ly/DiffAciCatena\n🤖 *Adrano* http://bit.ly/DiffAdrano\n🤖 *Catania* http://bit.ly/DiffCatania\n🤖 *Gravina di Catania* http://bit.ly/DiffGravinaCT\n🤖 *San Giovanni la Punta* http://bit.ly/DiffSGLaPunta\n🤖 *San Gregorio di Catania* http://bit.ly/DiffSanGregorioCT\n🤖 *Viagrande* http://bit.ly/DiffViagrande\n\n_N.B. Non sono ancora così interattivi come_ *Diffy*, _ma ben presto lo diventeranno.\n\n\n\n_"];
+    $telegram->sendMessage($content);
+}
+//Fine NOMECITTA non è la tua città?
 ?>
