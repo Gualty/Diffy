@@ -1,4 +1,4 @@
-# BOTDifferenziata ♻️
+# Diffy a.k.a. BOTDifferenziata ♻️
 Bot Telegram per la gestione della raccolta differenziata nei comuni.
 
 Funzioni
@@ -7,7 +7,7 @@ Funzioni
 * Dettagli sui singoli materiali riciclabili e non
 * Notifica push quando è il momento di portare fuori i rifiuti
 * Informazioni utili fornite dal comune.
-* Supporto ai grandi comuni con più zone
+* ~~Supporto ai grandi comuni con più zone~~ (sarà reintrodotta in futuro)
 
 Materiali supportati
 ---------
@@ -24,13 +24,16 @@ BOT già attivi
 
 [@DiffAdranobot](https://telegram.me/DiffAdranobot) - Raccolta differenziata Adrano (CT)
 
+[@DiffyCatania](https://t.me/DiffyCataniabot) - Raccolta differenziata Adrano (CT)
+
 [@DiffGravinaCTbot](https://telegram.me/DiffGravinaCTbot) - Raccolta differenziata Gravina di Catania (CT)
 
 [@DiffSGLaPuntabot](https://telegram.me/DiffSGLaPuntabot) - Raccolta differenziata San Giovanni la Punta (CT)
 
+[@DiffSanGregoriobot](https://telegram.me/DiffSanGregoriobot) - Raccolta differenziata San Gregorio di Catania (CT)
+
 [@DiffViagrandebot](https://telegram.me/DiffViagrandebot) - Raccolta differenziata Viagrande (CT)
 
-[@DiffSanGregoriobot](https://telegram.me/DiffSanGregoriobot) - Raccolta differenziata San Gregorio di Catania (CT)
 
 
 Requisiti
