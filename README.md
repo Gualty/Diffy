@@ -24,7 +24,7 @@ BOT già attivi
 
 [@DiffAdranobot](https://telegram.me/DiffAdranobot) - Raccolta differenziata Adrano (CT)
 
-[@DiffyCatania](https://t.me/DiffyCataniabot) - Raccolta differenziata Adrano (CT)
+[@DiffyCatania](https://t.me/DiffyCataniabot) - Raccolta differenziata Catania (CT)
 
 [@DiffGravinaCTbot](https://telegram.me/DiffGravinaCTbot) - Raccolta differenziata Gravina di Catania (CT)
 
