@@ -20,7 +20,9 @@ Materiali supportati
 
 BOT già attivi
 ---------
-[@DiffAciCatenabot](https://telegram.me/DiffAciCatenabot) - Raccolta differenziata Aci Catena(CT)
+[@DiffAciCatenabot](https://telegram.me/DiffAciCatenabot) - Raccolta differenziata Aci Catena (CT)
+
+[@DiffAcirealebot](https://telegram.me/DiffyAcirealebot) - Raccolta differenziata Acireale (CT)
 
 [@DiffAdranobot](https://telegram.me/DiffAdranobot) - Raccolta differenziata Adrano (CT)
 
